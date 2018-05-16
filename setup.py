@@ -41,25 +41,22 @@ except ImportError:
 # to this sample package.
 setup(
     setup_requires=['d2to1>=0.2.11', 'stsci.distutils>=0.3.7'],
-    namespace_packages=['pandexo'], packages=['pandexo'],
+    namespace_packages=['colorcolor'], packages=['colorcolor'],
     d2to1=True,
     install_requires=[
           'numpy>=1.12.1',
           'bokeh==0.12.6',
           'tornado',
           'pandas',
-#          'multiprocessing',
           'joblib',
-          'pandeia.engine',
-          'batman-package',
           'photutils',
           'astropy==2.0.2',
           'pysynphot',
           'sqlalchemy',
           'sphinx==1.5'
-          ],
-    entry_points = {
-        'console_scripts':
-            ['start_pandexo=pandexo.engine.run_online:main']
-    }
+          ]#,
+    #entry_points = {
+    #    'console_scripts':
+    #        ['start_pandexo=pandexo.engine.run_online:main']
+    #}
 )

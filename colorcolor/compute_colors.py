@@ -612,7 +612,7 @@ def WFIRST_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 		(Optional) Default is Sun-like. You can feel free to change the temp, metal and logg of the star but note that 
 		this will still pull the original model set that was computed for a sun like star
 	"""
-	filters = list(c.print_filters('wfirst'))
+	filters = list(print_filters('wfirst'))
 
 	ccdf = pd.DataFrame({'modelid':[], filters[0]:[], filters[1]:[], filters[2]:[], filters[3]:[], filters[4]:[], filters[5]:[],
 		                'cloud':[], 'metallicity':[], 'distance':[], 'phase':[]}) 
@@ -620,12 +620,12 @@ def WFIRST_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 	for i in header.index:
 
 		planet_dict = header.loc[i]
-		planet = c.select_model(planet_dict)
+		planet = select_model(planet_dict)
 
 		print(planet_dict['index'])
 
-		cc123 = c.color_color(planet, star, filters[0],filters[1] ,filters[2],'wfirst')
-		cc456 = c.color_color(planet, star, filters[3],filters[4] ,filters[5],'wfirst')
+		cc123 = color_color(planet, star, filters[0],filters[1] ,filters[2],'wfirst')
+		cc456 = color_color(planet, star, filters[3],filters[4] ,filters[5],'wfirst')
 
 		newdf = pd.DataFrame( {'modelid':planet_dict['index'], filters[0]:cc123[2], filters[1]:cc123[3], filters[2]:cc123[4], 
 								filters[3]:cc456[2], filters[4]:cc456[3], filters[5]:cc456[4],
@@ -657,17 +657,17 @@ def VPL_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 		(Optional) Default is Sun-like. You can feel free to change the temp, metal and logg of the star but note that 
 		this will still pull the original model set that was computed for a sun like star
 	"""
-	filters = list(c.print_filters('vpl'))
+	filters = list(print_filters('vpl'))
 	ccdf = pd.DataFrame({'modelid':[], filters[0]:[], filters[1]:[], filters[2]:[], filters[3]:[], filters[4]:[],
 		                'cloud':[], 'metallicity':[], 'distance':[], 'phase':[]}) 
 	for i in header.index:
 
 		planet_dict = header.loc[i]
-		planet = c.select_model(planet_dict)
+		planet = select_model(planet_dict)
 
 		print(planet_dict['index'])
-		cc123 = c.color_color(planet, star, filters[0],filters[1] ,filters[2],'vpl')
-		cc456 = c.color_color(planet, star, filters[3],filters[4] ,filters[1],'vpl')
+		cc123 = color_color(planet, star, filters[0],filters[1] ,filters[2],'vpl')
+		cc456 = color_color(planet, star, filters[3],filters[4] ,filters[1],'vpl')
 
 		newdf = pd.DataFrame( {'modelid':i, filters[0]:cc123[2], filters[1]:cc123[3], filters[2]:cc123[4], 
 	            filters[3]:cc456[2], filters[4]:cc456[3],
@@ -683,7 +683,7 @@ def VPL_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 
 
 #Fake SET
-filters = list(c.print_filters('fake'))
+filters = list(print_filters('fake'))
 ccdf = pd.DataFrame({'modelid':[], 'cloud':[], 'metallicity':[], 'distance':[], 'phase':[]}) 
 fdf = pd.DataFrame({i:[] for i in filters})
 ccdf = ccdf.append(fdf,ignore_index=True)
