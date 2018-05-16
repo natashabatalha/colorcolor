@@ -5,7 +5,6 @@ from bokeh.layouts import gridplot, column, row
 import numpy as np 
 import pandas as pd 
 import warnings
-import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore")
     import pysynphot as psyn
@@ -13,6 +12,7 @@ import json
 import os
 from sqlalchemy import *
 import scipy.signal as scisig
+from itertools import combinations as comb
 
 
 from bokeh.layouts import gridplot
@@ -21,7 +21,7 @@ Spectral10 = Spectral10[::-1]
 #mdoel database
 
 engine = create_engine('sqlite:///' + os.path.join(os.getenv('ALBEDO_DB'),'AlbedoModels_2015.db'))
-meta_alb = pd.read_sql_table('header',engine)
+header = pd.read_sql_table('header',engine)
 
 
 def print_available(key):
@@ -37,7 +37,7 @@ def print_available(key):
 	str, list
 		input key and list of available values
 	"""
-	return key, meta_alb[key].unique()
+	return key, header[key].unique()
 
 
 
@@ -196,9 +196,9 @@ def select_model(planet_dict,kernel_size=3):
 	dist_val = float(planet_dict['distance'])
 	phase_val=float(planet_dict['phase'])
     
-	row = meta_alb.loc[(meta_alb.gravity==gravity_val) & (meta_alb.temp==temp_val)
-     & (meta_alb.metallicity==met_val) & (meta_alb.distance==dist_val) & 
-     (meta_alb.cloud==cloud_val) & (meta_alb.phase==phase_val)]
+	row = header.loc[(header.gravity==gravity_val) & (header.temp==temp_val)
+     & (header.metallicity==met_val) & (header.distance==dist_val) & 
+     (header.cloud==cloud_val) & (header.phase==phase_val)]
     
 	model = pd.read_sql_table(row['index'].values[0],engine)
 	a = remove_out(model,kernel_size)
@@ -212,7 +212,7 @@ def print_filters(set):
     Parameters
     ----------
     set : str
-        set that defines filters bundle to choose. Currently availalbe are: WFIRST and VPL
+        set that defines filters bundle to choose. Currently availalbe are: WFIRST VPL fake
 	"""
 	if set.lower() == 'wfirst':
 		with open(os.path.join(os.getenv('ALBEDO_DB'),"WFIRST.json")) as filters:
@@ -221,6 +221,7 @@ def print_filters(set):
 	elif set.lower() == 'vpl':
 		with open(os.path.join(os.getenv('ALBEDO_DB'),"VPL.json")) as filters:
 			data = json.load(filters)
+		return data.keys()
 	elif set.lower() == 'fake':
 		with open(os.path.join(os.getenv('ALBEDO_DB'),"fake.json")) as filters:
 			data = json.load(filters)
@@ -234,7 +235,7 @@ def get_filter(filter, set):
 	filter : str
 		Name of the filter (see print_filters) for options 
 	set : str
-		Set that defines filter bundle to choose from. Currently availalbe are WFIRST and VPL
+		Set that defines filter bundle to choose from. Currently availalbe are WFIRST, VPL, fake
 	"""
 	if set.lower() =='wfirst':
 		with open(os.path.join(os.getenv('ALBEDO_DB'),"WFIRST.json")) as filters:
@@ -243,6 +244,7 @@ def get_filter(filter, set):
 	elif set.lower() == 'vpl':
 		with open(os.path.join(os.getenv('ALBEDO_DB'),"VPL.json")) as filters:
 			data = json.load(filters)
+		return data[filter]
 	elif set.lower() == 'fake':
 		with open(os.path.join(os.getenv('ALBEDO_DB'),"fake.json")) as filters:
 			data = json.load(filters)
@@ -417,7 +419,7 @@ def three_filter_fig(metallicity, distance, clouds, phase, filter1, filter2, fil
 	
 	for i in df.index: 
 		
-		planet_dict = meta_alb.loc[meta_alb['index'] == allcolors['modelid'][i]]
+		planet_dict = header.loc[header['index'] == allcolors['modelid'][i]]
 
 		#check for right planet parameters
 		if float(planet_dict['phase']) not in phase: 
@@ -528,7 +530,7 @@ def four_filter_fig(metallicity, distance, clouds, phase,filter1, filter2, filte
 	
 	for i in allfluxes.index: 
 
-		planet_dict = meta_alb.loc[meta_alb['index'] == allfluxes['modelid'][i]]
+		planet_dict = header.loc[header['index'] == allfluxes['modelid'][i]]
 
 		#check for right planet parameters
 		if float(planet_dict['phase']) not in phase: 
@@ -595,7 +597,96 @@ def four_filter_fig(metallicity, distance, clouds, phase,filter1, filter2, filte
 
 	return allx, ally, allc
 
+#WFIRST
+def WFIRST_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
+	"""
+	Creates a dataframe with all possible absolute maginitudes and colors for the Albedo Model Grid 
+	This does not require anything but an output filename but it assumes that you have already 
+	created a pointer to the AlbedoModel database via the environment variable "Albedo_DB"
 
+	Parameters 
+	----------
+	output_file : str
+		Output pickle file where the dataframe will get stored. 
+	star : dict 
+		(Optional) Default is Sun-like. You can feel free to change the temp, metal and logg of the star but note that 
+		this will still pull the original model set that was computed for a sun like star
+	"""
+	filters = list(c.print_filters('wfirst'))
+
+	ccdf = pd.DataFrame({'modelid':[], filters[0]:[], filters[1]:[], filters[2]:[], filters[3]:[], filters[4]:[], filters[5]:[],
+		                'cloud':[], 'metallicity':[], 'distance':[], 'phase':[]}) 
+
+	for i in header.index:
+
+		planet_dict = header.loc[i]
+		planet = c.select_model(planet_dict)
+
+		print(planet_dict['index'])
+
+		cc123 = c.color_color(planet, star, filters[0],filters[1] ,filters[2],'wfirst')
+		cc456 = c.color_color(planet, star, filters[3],filters[4] ,filters[5],'wfirst')
+
+		newdf = pd.DataFrame( {'modelid':planet_dict['index'], filters[0]:cc123[2], filters[1]:cc123[3], filters[2]:cc123[4], 
+								filters[3]:cc456[2], filters[4]:cc456[3], filters[5]:cc456[4],
+								'cloud':[planet_dict['cloud']], 'metallicity':[planet_dict['metallicity']], 'distance':[planet_dict['distance']], 'phase':[planet_dict['phase']]}, index = [0]) 
+		
+		ccdf=ccdf.append(newdf,ignore_index = True )
+
+	for f in comb(filters,2):
+	    f1f2 = -2.5*np.log10(ccdf[f[0]]/ccdf[f[1]])
+	    ccdf = ccdf.join(pd.DataFrame({f[0]+f[1]:f1f2}))
+
+	pk.dump(ccdf,open(output_file,'wb'))
+
+
+
+#VPL
+def VPL_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
+	"""
+	Creates a dataframe with all possible absolute maginitudes and colors for the Albedo Model Grid 
+	and the VPL colors from Krissansen-Totten 2016
+	This does not require anything but an output filename but it assumes that you have already 
+	created a pointer to the AlbedoModel database via the environment variable "Albedo_DB"
+
+	Parameters 
+	----------
+	output_file : str
+		Output pickle file where the dataframe will get stored. 
+	star : dict 
+		(Optional) Default is Sun-like. You can feel free to change the temp, metal and logg of the star but note that 
+		this will still pull the original model set that was computed for a sun like star
+	"""
+	filters = list(c.print_filters('vpl'))
+	ccdf = pd.DataFrame({'modelid':[], filters[0]:[], filters[1]:[], filters[2]:[], filters[3]:[], filters[4]:[],
+		                'cloud':[], 'metallicity':[], 'distance':[], 'phase':[]}) 
+	for i in header.index:
+
+		planet_dict = header.loc[i]
+		planet = c.select_model(planet_dict)
+
+		print(planet_dict['index'])
+		cc123 = c.color_color(planet, star, filters[0],filters[1] ,filters[2],'vpl')
+		cc456 = c.color_color(planet, star, filters[3],filters[4] ,filters[1],'vpl')
+
+		newdf = pd.DataFrame( {'modelid':i, filters[0]:cc123[2], filters[1]:cc123[3], filters[2]:cc123[4], 
+	            filters[3]:cc456[2], filters[4]:cc456[3],
+								'cloud':[planet_dict['cloud']], 'metallicity':[planet_dict['metallicity']], 'distance':[planet_dict['distance']], 
+								'phase':[planet_dict['phase']]}, index = [0]) 
+		ccdf=ccdf.append(newdf,ignore_index = True )
+	for f in comb(filters,2):
+		f1f2 = -2.5*np.log10(ccdf[f[0]]/ccdf[f[1]])
+		ccdf = ccdf.join(pd.DataFrame({f[0]+f[1]:f1f2}))
+
+	pk.dump(ccdf,open(output_file,'wb'))
+
+
+
+#Fake SET
+filters = list(c.print_filters('fake'))
+ccdf = pd.DataFrame({'modelid':[], 'cloud':[], 'metallicity':[], 'distance':[], 'phase':[]}) 
+fdf = pd.DataFrame({i:[] for i in filters})
+ccdf = ccdf.append(fdf,ignore_index=True)
 
 
 
