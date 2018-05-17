@@ -44,9 +44,9 @@ def investigate_fsed(directory, metal, distance, fsed, plot_file = 'plot.html'):
       cols = colfun1(200)
       color_mapper = LinearColorMapper(palette=cols, low=0, high=1)
 
-      dat01 = pd.read_csv(os.path.join(direc, mh, dis,mh+'x_rfacv0.5-nc_tint150-'+fsed[0]+'-'+dis+'.cld'), header=None,delim_whitespace=True)
-      dat1 = pd.read_csv(os.path.join(direc, mh, dis,mh+'x_rfacv0.5-nc_tint150-'+fsed[1]+'-'+dis+'.cld'), header=None,delim_whitespace=True)
-      dat6 = pd.read_csv(os.path.join(direc, mh, dis,mh+'x_rfacv0.5-nc_tint150-'+fsed[2]+'-'+dis+'.cld'), header=None,delim_whitespace=True)
+      dat01 = pd.read_csv(os.path.join(directory, metal, distance,metal+'x_rfacv0.5-nc_tint150-'+fsed[0]+'-'+distance+'.cld'), header=None,delim_whitespace=True)
+      dat1 = pd.read_csv(os.path.join(directory, metal, distance,metal+'x_rfacv0.5-nc_tint150-'+fsed[1]+'-'+distance+'.cld'), header=None,delim_whitespace=True)
+      dat6 = pd.read_csv(os.path.join(directory, metal, distance,metal+'x_rfacv0.5-nc_tint150-'+fsed[2]+'-'+distance+'.cld'), header=None,delim_whitespace=True)
 
 
       scat01 = np.flip(np.reshape(dat01[4],(60,196)),0)#[0:10,:]

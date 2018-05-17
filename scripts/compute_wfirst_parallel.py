@@ -22,7 +22,7 @@ filters = list(c.print_filters('wfirst'))
 ccdf = pd.DataFrame({'modelid':[], 'cloud':[], 'metallicity':[], 'distance':[], 'phase':[]}) 
 fdf = pd.DataFrame({i:[] for i in filters})
 ccdf = ccdf.append(fdf,ignore_index=True)
-
+"""
 def runPS(headerindex):
 	#for i in header.index:
 
@@ -64,6 +64,8 @@ dfs = multiprocessing.Pool().map(runPS, header.index)
 ccdf = pd.concat(dfs)
 
 pk.dump(ccdf,open('ccdfmultiprocessing_test.pk','wb'))
+"""
+ccdf = pk.load(open('ccdfmultiprocessing_test.pk','rb'))
 
 i = 0 
 for f in comb(filters,2):#f in filters[2:]:
@@ -73,9 +75,10 @@ for f in comb(filters,2):#f in filters[2:]:
 		f1f2 = -2.5*np.log10(ccdf[f[0]]/ccdf[f[1]])
 		f1f2=f1f2.rename(f[0]+f[1])  
 		test=pd.concat([ccdf,f1f2],axis=1) 
-
-	f1f2 = -2.5*np.log10(ccdf[f[0]]/ccdf[f[1]])
-	f1f2=f1f2.rename(f[0]+f[1])  
-	test = pd.concat([test,f1f2],axis=1)
-
+	else:
+		f1f2 = -2.5*np.log10(ccdf[f[0]]/ccdf[f[1]])
+		f1f2=f1f2.rename(f[0]+f[1])  
+		test = pd.concat([test,f1f2],axis=1)
+	i +=1
+test.index = test.modelid
 pk.dump(test,open('wfirst_parallel_cutofftop.pk','wb'))
