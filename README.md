@@ -1,2 +1,2 @@
-# colorcolor : Machine Learning for Color Classification of Extrasolar Giant Planets 
+# colorcolor : Color Classification of Extrasolar Giant Planets
 
