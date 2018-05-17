@@ -17,7 +17,7 @@ def listdir_nohidden(path):
             yield f
 
 #define your database name 
-db = create_engine('sqlite:///reference/AlbedoModels_2015.db')
+db = create_engine('sqlite:///' + os.path.join(os.getenv('ALBEDO_DB'),'AlbedoModels_2015.db'))
 
 #metalicities
 for m in ['m0.0','m0.5','m1.0','m1.5','m1.7','m2.0']:

@@ -13,7 +13,7 @@ import os
 from sqlalchemy import *
 import scipy.signal as scisig
 from itertools import combinations as comb
-
+import pickle as pk
 
 from bokeh.layouts import gridplot
 from bokeh.palettes import Spectral10, Colorblind6, Category10
@@ -598,7 +598,7 @@ def four_filter_fig(metallicity, distance, clouds, phase,filter1, filter2, filte
 	return allx, ally, allc
 
 #WFIRST
-def WFIRST_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
+def WFIRST_colors(output_file='wfirst_colors.pk',star={'temp':5800, 'metal':0.0, 'logg':4.0},print_status=False):
 	"""
 	Creates a dataframe with all possible absolute maginitudes and colors for the Albedo Model Grid 
 	This does not require anything but an output filename but it assumes that you have already 
@@ -607,10 +607,13 @@ def WFIRST_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 	Parameters 
 	----------
 	output_file : str
-		Output pickle file where the dataframe will get stored. 
+		(Optional)Default='wfirst_colors.pk' Output pickle file where the dataframe will get stored. 
+		If you don't want a pickle then Default=None
 	star : dict 
 		(Optional) Default is Sun-like. You can feel free to change the temp, metal and logg of the star but note that 
 		this will still pull the original model set that was computed for a sun like star
+	print_status : bool 
+		(Optional) Default=False, prints out the planet model to check progress
 	"""
 	filters = list(print_filters('wfirst'))
 
@@ -622,7 +625,7 @@ def WFIRST_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 		planet_dict = header.loc[i]
 		planet = select_model(planet_dict)
 
-		print(planet_dict['index'])
+		if print_status: print(planet_dict['index'])
 
 		cc123 = color_color(planet, star, filters[0],filters[1] ,filters[2],'wfirst')
 		cc456 = color_color(planet, star, filters[3],filters[4] ,filters[5],'wfirst')
@@ -637,12 +640,11 @@ def WFIRST_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 	    f1f2 = -2.5*np.log10(ccdf[f[0]]/ccdf[f[1]])
 	    ccdf = ccdf.join(pd.DataFrame({f[0]+f[1]:f1f2}))
 
-	pk.dump(ccdf,open(output_file,'wb'))
-
-
+	if isinstance(output_file, str): pk.dump(ccdf,open(output_file,'wb'))
+	return ccdf
 
 #VPL
-def VPL_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
+def VPL_colors(output_file='vpl_colors.pk',star={'temp':5800, 'metal':0.0, 'logg':4.0},print_status=False):
 	"""
 	Creates a dataframe with all possible absolute maginitudes and colors for the Albedo Model Grid 
 	and the VPL colors from Krissansen-Totten 2016
@@ -652,10 +654,13 @@ def VPL_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 	Parameters 
 	----------
 	output_file : str
-		Output pickle file where the dataframe will get stored. 
+		(Optional)Default='wfirst_colors.pk' Output pickle file where the dataframe will get stored. 
+		If you don't want a pickle then Default=None
 	star : dict 
 		(Optional) Default is Sun-like. You can feel free to change the temp, metal and logg of the star but note that 
 		this will still pull the original model set that was computed for a sun like star
+	print_status : bool 
+		(Optional) Default=False, prints out the planet model to check progress
 	"""
 	filters = list(print_filters('vpl'))
 	ccdf = pd.DataFrame({'modelid':[], filters[0]:[], filters[1]:[], filters[2]:[], filters[3]:[], filters[4]:[],
@@ -665,7 +670,7 @@ def VPL_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 		planet_dict = header.loc[i]
 		planet = select_model(planet_dict)
 
-		print(planet_dict['index'])
+		if print_status: print(planet_dict['index'])
 		cc123 = color_color(planet, star, filters[0],filters[1] ,filters[2],'vpl')
 		cc456 = color_color(planet, star, filters[3],filters[4] ,filters[1],'vpl')
 
@@ -678,15 +683,9 @@ def VPL_colors(output_file,star={'temp':5800, 'metal':0.0, 'logg':4.0}):
 		f1f2 = -2.5*np.log10(ccdf[f[0]]/ccdf[f[1]])
 		ccdf = ccdf.join(pd.DataFrame({f[0]+f[1]:f1f2}))
 
-	pk.dump(ccdf,open(output_file,'wb'))
+	if isinstance(output_file, str): pk.dump(ccdf,open(output_file,'wb'))
+	return ccdf
 
-
-
-#Fake SET
-filters = list(print_filters('fake'))
-ccdf = pd.DataFrame({'modelid':[], 'cloud':[], 'metallicity':[], 'distance':[], 'phase':[]}) 
-fdf = pd.DataFrame({i:[] for i in filters})
-ccdf = ccdf.append(fdf,ignore_index=True)
 
 
 
