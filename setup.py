@@ -55,8 +55,5 @@ setup(
           'sqlalchemy',
           'sphinx==1.5'
           ]#,
-    #entry_points = {
-    #    'console_scripts':
-    #        ['start_pandexo=pandexo.engine.run_online:main']
-    #}
+    #scripts=['colorcolor/explore_albedos']
 )
