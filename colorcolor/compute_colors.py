@@ -20,9 +20,11 @@ from bokeh.palettes import Spectral10, Colorblind6, Category10
 Spectral10 = Spectral10[::-1]
 #mdoel database
 
-engine = create_engine('sqlite:///' + os.path.join(os.getenv('ALBEDO_DB'),'AlbedoModels_2015.db'))
-header = pd.read_sql_table('header',engine)
-
+try:
+	engine = create_engine('sqlite:///' + os.path.join(os.getenv('ALBEDO_DB'),'AlbedoModels_2015.db'))
+	header = pd.read_sql_table('header',engine)
+except: 
+	warnings.warn('Database not installed, colorcolor function will be severley crippled')
 
 def print_available(key):
 	"""Return available models for certain parameter space 
