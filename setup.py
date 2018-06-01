@@ -40,10 +40,26 @@ except ImportError:
 # also be placed in the setup.cfg, as will be demonstrated in a future update
 # to this sample package.
 setup(
-    setup_requires=['d2to1>=0.2.11', 'stsci.distutils>=0.3.7'],
-    namespace_packages=['colorcolor'], packages=['colorcolor'],
-    d2to1=True,
-    install_requires=[
+    name='colorcolor', 
+    version = 'dev0.0',
+    description = 'color-color classification of extrasolar giant planets',
+    long_description = 'README.md',
+    author = 'Natasha Batalha at Space Telescope Science Institute',
+    author_email = 'natasha.e.batalha@gmail.com',
+    url = 'https://natashabatalha.github.io/color-color.html',
+    license = 'MIT',
+    download_url = 'https://github.com/natashabatalha/colorcolor',
+    classifiers = [
+                  'Intended Audience :: Science/Research',
+                  'License :: OSI Approved :: BSD License', 
+                  'Operating System :: OS Independent' , 
+                  'Programming Language :: Python',
+                  'Programming Language :: Python :: 3',
+                  'Topic :: Scientific/Engineering :: Astronomy',
+                  'Topic :: Software Development :: Libraries :: Python Modules'
+  ],
+  packages=['colorcolor'],
+  install_requires=[
           'numpy>=1.12.1',
           'bokeh==0.12.6',
           'tornado',
@@ -53,7 +69,11 @@ setup(
           'astropy==2.0.2',
           'pysynphot',
           'sqlalchemy',
-          'sphinx==1.5'
-          ]#,
-    #scripts=['colorcolor/explore_albedos']
+          'sphinx',
+          'sklearn',
+          'matplotlib',
+          'scipy',
+          'seaborn'
+          ], 
+    zip_safe = False,
 )
