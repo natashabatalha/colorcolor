@@ -21,7 +21,7 @@ Spectral10 = Spectral10[::-1]
 #mdoel database
 
 try:
-	engine = create_engine('sqlite:///' + os.path.join(os.getenv('ALBEDO_DB'),'AlbedoModels_2015.db'))
+	engine = create_engine('sqlite:///' + os.path.join(os.getenv('ALBEDO_DB'),'AlbedoModels.db'))
 	header = pd.read_sql_table('header',engine)
 except: 
 	warnings.warn('Database not installed, colorcolor function will be severley crippled')

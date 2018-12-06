@@ -1,0 +1,32 @@
+{
+	"506": {
+		"minwave":0.480,
+		"maxwave":0.532,
+		"thru":0.01
+	},
+	"575":{
+		"minwave":0.546,
+		"maxwave":0.604,
+		"thru":0.01
+	},
+	"661": {
+		"minwave":0.628,
+		"maxwave":0.694,
+		"thru":0.01
+	},
+	"883":{
+		"minwave":0.860,
+		"maxwave":0.906,
+		"thru":0.01
+	},
+	"721":{
+		"minwave":0.703,
+		"maxwave":0.739,
+		"thru":0.01
+	},
+	"940":{
+		"minwave":0.910,
+		"maxwave":0.970,
+		"thru":0.01
+	}
+}

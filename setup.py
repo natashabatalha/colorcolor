@@ -41,7 +41,7 @@ except ImportError:
 # to this sample package.
 setup(
     name='colorcolor', 
-    version = 'dev0.0',
+    version = '1.0',
     description = 'color-color classification of extrasolar giant planets',
     long_description = 'README.md',
     author = 'Natasha Batalha at Space Telescope Science Institute',
@@ -60,8 +60,8 @@ setup(
   ],
   packages=['colorcolor'],
   install_requires=[
-          'numpy>=1.12.1',
-          'bokeh==0.12.6',
+          'numpy',
+          'bokeh',
           'tornado',
           'pandas',
           'joblib',
