@@ -22,3 +22,5 @@ export ALBEDO_DB="/path/to/directory/with/reference/"
 
 
 [![Build Status](https://travis-ci.org/natashabatalha/colorcolor.svg?branch=master)](https://travis-ci.org/natashabatalha/colorcolor)
+
+[![DOI](https://zenodo.org/badge/133716746.svg)](https://zenodo.org/badge/latestdoi/133716746)
