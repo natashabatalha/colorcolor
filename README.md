@@ -19,3 +19,6 @@ export ALBEDO_DB="/path/to/directory/with/reference/"
 
 
 `Notebooks/` folder contains step-by-step instructions to reproduce results of Batalha+2018. 
+
+
+[![Build Status](https://travis-ci.org/natashabatalha/colorcolor.svg?branch=master)](https://travis-ci.org/natashabatalha/colorcolor)
